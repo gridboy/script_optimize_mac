@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>script_optimize_mac — Documentation</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7f7f8;
+    --surface: #ffffff;
+    --text: #1c1c1f;
+    --muted: #5b5b63;
+    --border: #e2e2e6;
+    --accent: #0060df;
+    --ok: #1a7f37;
+    --warn: #9a6700;
+    --danger: #cf222e;
+    --code-bg: #f0f1f3;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16161a;
+      --surface: #1e1e23;
+      --text: #eceef0;
+      --muted: #a3a3ad;
+      --border: #303038;
+      --accent: #6fa8ff;
+      --ok: #4cbb6b;
+      --warn: #e0a83a;
+      --danger: #f2777a;
+      --code-bg: #26262d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+  }
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 5rem;
+  }
+  header h1 {
+    font-size: 1.9rem;
+    margin-bottom: 0.25rem;
+  }
+  header p.subtitle {
+    color: var(--muted);
+    margin-top: 0;
+    font-size: 1.05rem;
+  }
+  .badge-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 1rem 0 2rem;
+  }
+  .badge {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .callout {
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--danger);
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1.5rem 0 2.5rem;
+  }
+  .callout strong { color: var(--danger); }
+  h2 {
+    font-size: 1.3rem;
+    margin-top: 3rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    margin: 1.1rem 0;
+  }
+  .step-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-bottom: 0.4rem;
+  }
+  .step-num {
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .step-title {
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .step p {
+    margin: 0.5rem 0;
+    color: var(--text);
+  }
+  .step .meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  code, pre {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.88em;
+  }
+  code {
+    background: var(--code-bg);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+  }
+  pre {
+    background: var(--code-bg);
+    padding: 0.9rem 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 0.6rem 0;
+  }
+  pre code { background: none; padding: 0; }
+  .risk {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    margin-left: 0.4rem;
+  }
+  .risk.low { color: var(--ok); background: color-mix(in srgb, var(--ok) 15%, transparent); }
+  .risk.med { color: var(--warn); background: color-mix(in srgb, var(--warn) 15%, transparent); }
+  .risk.high { color: var(--danger); background: color-mix(in srgb, var(--danger) 15%, transparent); }
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>script_optimize_mac</h1>
+    <p class="subtitle">Documentation of the procedures run by <code>optimize_pro.sh</code></p>
+    <div class="badge-row">
+      <span class="badge">Bash</span>
+      <span class="badge">macOS</span>
+      <span class="badge">Requires sudo</span>
+      <span class="badge">GPL-3.0</span>
+    </div>
+  </header>
+
+  <div class="callout">
+    <strong>⚠️ Destructive script.</strong> Several steps permanently delete
+    data (caches, logs, local Time Machine snapshots). Take a recent backup
+    before running it. See the <a href="../README.md">README</a> for usage
+    instructions.
+  </div>
+
+  <h2>Overview</h2>
+  <p>
+    <code>optimize_pro.sh</code> runs eight maintenance functions in
+    sequence. After the user confirms, the script asks for the administrator
+    password once (<code>sudo -v</code>) and then keeps the <code>sudo</code>
+    session alive in the background for the whole run, so it doesn't prompt
+    again at every step.
+  </p>
+
+  <h2>Procedure details</h2>
+
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">1</span>
+      <span class="step-title">clean_caches — Cache cleanup</span>
+      <span class="risk med">Medium risk</span>
+    </div>
+    <p>Removes the contents of system and user cache directories, and application log files.</p>
+    <pre><code>sudo rm -rf /Library/Caches/*
+rm -rf ~/Library/Caches/*
+rm -rf ~/Library/Logs/*</code></pre>
+    <p class="meta">Effect: frees disk space and forces applications to rebuild their caches on next launch (may slow their first startup).</p>
+  </div>
+
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">2</span>
+      <span class="step-title">clean_temp_files — System temporary files</span>
+      <span class="risk low">Low risk</span>
+    </div>
+    <p>Empties the temporary file directories used by the system and applications.</p>
+    <pre><code>sudo rm -rf /private/var/tmp/*
+sudo rm -rf /private/var/folders/*</code></pre>
+    <p class="meta">Effect: purges volatile files that are normally recreated on demand.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">3</span>
+      <span class="step-title">purge_ram — RAM purge</span>
+      <span class="risk low">Low risk</span>
+    </div>
+    <p>Forces macOS to release inactive memory pages.</p>
+    <pre><code>sudo purge</code></pre>
+    <p class="meta">Effect: may temporarily slow down the system while memory caches are rebuilt.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">4</span>
+      <span class="step-title">flush_dns — DNS cache</span>
+      <span class="risk low">Low risk</span>
+    </div>
+    <p>Flushes the DNS resolver cache and restarts the resolver service.</p>
+    <pre><code>sudo dscacheutil -flushcache
+sudo killall -HUP mDNSResponder</code></pre>
+    <p class="meta">Effect: the next domain name lookups will be resolved from scratch.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">5</span>
+      <span class="step-title">clean_time_machine_snapshots — Local Time Machine snapshots</span>
+      <span class="risk high">High risk</span>
+    </div>
+    <p>Lists and then deletes local snapshots created by Time Machine (restore points stored on the internal disk).</p>
+    <pre><code>tmutil listlocalsnapshots /
+sudo tmutil deletelocalsnapshots &lt;snapshot&gt;</code></pre>
+    <p class="meta">Effect: frees the disk space used by these snapshots. Does not delete Time Machine backups on an external drive, but reduces the local restore points available.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">6</span>
+      <span class="step-title">maintain_homebrew — Homebrew maintenance</span>
+      <span class="risk med">Medium risk</span>
+    </div>
+    <p>If Homebrew is installed, updates formulae, upgrades installed packages, removes orphaned dependencies, and cleans the cache.</p>
+    <pre><code>brew update
+brew upgrade
+brew autoremove
+brew cleanup -s</code></pre>
+    <p class="meta">Effect: Homebrew packages are upgraded to their latest versions; the step is skipped if <code>brew</code> is not detected.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">7</span>
+      <span class="step-title">reindex_spotlight — Spotlight reindexing</span>
+      <span class="risk med">Medium risk</span>
+    </div>
+    <p>Forces a full rebuild of the Spotlight search index for the main volume.</p>
+    <pre><code>sudo mdutil -E /</code></pre>
+    <p class="meta">Effect: Spotlight search may be temporarily unavailable or incomplete, and CPU usage may increase for several minutes while reindexing runs in the background.</p>
+  </div>
+
+  <div class="step">
+    <div class="step-head">
+      <span class="step-num">8</span>
+      <span class="step-title">repair_disk_permissions — Disk verification</span>
+      <span class="risk low">Low risk</span>
+    </div>
+    <p>Checks the integrity of the boot volume's file system.</p>
+    <pre><code>diskutil verifyVolume /</code></pre>
+    <p class="meta">Effect: read-only operation (verification, not automatic repair); may take several minutes.</p>
+  </div>
+
+  <h2>Confirmation and completion</h2>
+  <p>
+    Before starting, the script displays a warning and asks for explicit
+    confirmation (<code>o</code>/<code>n</code>, French for yes/no). After the eight steps
+    complete, it recommends restarting the machine
+    (<code>sudo shutdown -r now</code>) to fully apply the effects of the
+    maintenance.
+  </p>
+
+  <footer>
+    See the repository <a href="../README.md">README</a> for usage and the
+    <a href="../CONTRIBUTING.md">contributing guide</a>.
+  </footer>
+</main>
+</body>
+</html>
