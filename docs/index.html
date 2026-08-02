@@ -3,7 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>script_optimize_mac — Documentation</title>
+<title>Mac Optimizer Pro — Advanced macOS Cleanup & Maintenance Script</title>
+<meta name="description" content="Mac Optimizer Pro (optimize_pro.sh) is a free open-source bash script that cleans and tunes up macOS in one run: cache cleanup, RAM purge, DNS flush, Time Machine snapshot cleanup, Homebrew maintenance, Spotlight reindexing, and a disk check.">
+<meta name="keywords" content="macOS optimization script, mac cleanup script, mac maintenance script, bash script macOS, homebrew maintenance, spotlight reindex, time machine snapshot cleanup, free up disk space mac, macOS performance">
+<meta name="author" content="GridBoy">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://gridboy.github.io/script_optimize_mac/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mac Optimizer Pro — Advanced macOS Cleanup & Maintenance Script">
+<meta property="og:description" content="A free, open-source bash script that gives your Mac a deep clean and tune-up in one run — caches, RAM, DNS, Time Machine, Homebrew, Spotlight, and disk health.">
+<meta property="og:url" content="https://gridboy.github.io/script_optimize_mac/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mac Optimizer Pro — Advanced macOS Cleanup & Maintenance Script">
+<meta name="twitter:description" content="A free, open-source bash script that gives your Mac a deep clean and tune-up in one run.">
 <style>
   :root {
     color-scheme: light dark;
@@ -70,13 +82,13 @@
   }
   .callout {
     border: 1px solid var(--border);
-    border-left: 4px solid var(--danger);
+    border-left: 4px solid var(--accent);
     background: var(--surface);
     border-radius: 8px;
     padding: 1rem 1.2rem;
     margin: 1.5rem 0 2.5rem;
   }
-  .callout strong { color: var(--danger); }
+  .callout strong { color: var(--accent); }
   h2 {
     font-size: 1.3rem;
     margin-top: 3rem;
@@ -157,21 +169,23 @@
 <body>
 <main>
   <header>
-    <h1>script_optimize_mac</h1>
-    <p class="subtitle">Documentation of the procedures run by <code>optimize_pro.sh</code></p>
+    <h1>⚡ Mac Optimizer Pro</h1>
+    <p class="subtitle">Give your Mac a deep clean and tune-up, automated. Here's exactly what <code>optimize_pro.sh</code> does, step by step.</p>
     <div class="badge-row">
       <span class="badge">Bash</span>
       <span class="badge">macOS</span>
+      <span class="badge">Free & open-source</span>
       <span class="badge">Requires sudo</span>
       <span class="badge">GPL-3.0</span>
     </div>
   </header>
 
   <div class="callout">
-    <strong>⚠️ Destructive script.</strong> Several steps permanently delete
-    data (caches, logs, local Time Machine snapshots). Take a recent backup
-    before running it. See the <a href="../README.md">README</a> for usage
-    instructions.
+    <strong>🧰 Good to know.</strong> This script goes deep, so a few steps
+    clear things out for good (caches, logs, local Time Machine snapshots) —
+    the same cleanup a power user would do by hand, just automated. As with
+    any system maintenance, it's good practice to have a recent backup on
+    hand. See the <a href="../README.md">README</a> for usage instructions.
   </div>
 
   <h2>Overview</h2>
@@ -189,7 +203,7 @@
     <div class="step-head">
       <span class="step-num">1</span>
       <span class="step-title">clean_caches — Cache cleanup</span>
-      <span class="risk med">Medium risk</span>
+      <span class="risk med">Moderate impact</span>
     </div>
     <p>Removes the contents of system and user cache directories, and application log files.</p>
     <pre><code>sudo rm -rf /Library/Caches/*
@@ -202,7 +216,7 @@ rm -rf ~/Library/Logs/*</code></pre>
     <div class="step-head">
       <span class="step-num">2</span>
       <span class="step-title">clean_temp_files — System temporary files</span>
-      <span class="risk low">Low risk</span>
+      <span class="risk low">Light touch</span>
     </div>
     <p>Empties the temporary file directories used by the system and applications.</p>
     <pre><code>sudo rm -rf /private/var/tmp/*
@@ -214,7 +228,7 @@ sudo rm -rf /private/var/folders/*</code></pre>
     <div class="step-head">
       <span class="step-num">3</span>
       <span class="step-title">purge_ram — RAM purge</span>
-      <span class="risk low">Low risk</span>
+      <span class="risk low">Light touch</span>
     </div>
     <p>Forces macOS to release inactive memory pages.</p>
     <pre><code>sudo purge</code></pre>
@@ -225,7 +239,7 @@ sudo rm -rf /private/var/folders/*</code></pre>
     <div class="step-head">
       <span class="step-num">4</span>
       <span class="step-title">flush_dns — DNS cache</span>
-      <span class="risk low">Low risk</span>
+      <span class="risk low">Light touch</span>
     </div>
     <p>Flushes the DNS resolver cache and restarts the resolver service.</p>
     <pre><code>sudo dscacheutil -flushcache
@@ -237,7 +251,7 @@ sudo killall -HUP mDNSResponder</code></pre>
     <div class="step-head">
       <span class="step-num">5</span>
       <span class="step-title">clean_time_machine_snapshots — Local Time Machine snapshots</span>
-      <span class="risk high">High risk</span>
+      <span class="risk high">Frees the most space</span>
     </div>
     <p>Lists and then deletes local snapshots created by Time Machine (restore points stored on the internal disk).</p>
     <pre><code>tmutil listlocalsnapshots /
@@ -249,7 +263,7 @@ sudo tmutil deletelocalsnapshots &lt;snapshot&gt;</code></pre>
     <div class="step-head">
       <span class="step-num">6</span>
       <span class="step-title">maintain_homebrew — Homebrew maintenance</span>
-      <span class="risk med">Medium risk</span>
+      <span class="risk med">Moderate impact</span>
     </div>
     <p>If Homebrew is installed, updates formulae, upgrades installed packages, removes orphaned dependencies, and cleans the cache.</p>
     <pre><code>brew update
@@ -263,7 +277,7 @@ brew cleanup -s</code></pre>
     <div class="step-head">
       <span class="step-num">7</span>
       <span class="step-title">reindex_spotlight — Spotlight reindexing</span>
-      <span class="risk med">Medium risk</span>
+      <span class="risk med">Moderate impact</span>
     </div>
     <p>Forces a full rebuild of the Spotlight search index for the main volume.</p>
     <pre><code>sudo mdutil -E /</code></pre>
@@ -274,7 +288,7 @@ brew cleanup -s</code></pre>
     <div class="step-head">
       <span class="step-num">8</span>
       <span class="step-title">repair_disk_permissions — Disk verification</span>
-      <span class="risk low">Low risk</span>
+      <span class="risk low">Light touch</span>
     </div>
     <p>Checks the integrity of the boot volume's file system.</p>
     <pre><code>diskutil verifyVolume /</code></pre>
